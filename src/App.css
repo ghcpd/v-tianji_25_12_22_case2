@@ -1,0 +1,110 @@
+.app {
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+
+.header {
+  background: #fff;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 24px;
+  color: #333;
+}
+
+.main {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.input-section {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.input-section input {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.input-section button {
+  padding: 12px 24px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.filter-section {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.filter-section button {
+  padding: 8px 16px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.todo-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px 0;
+}
+
+.todo-list li {
+  background: white;
+  padding: 12px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.todo-list li.completed span {
+  text-decoration: line-through;
+  color: #999;
+}
+
+.todo-list li input[type="checkbox"] {
+  cursor: pointer;
+}
+
+.todo-list li span {
+  flex: 1;
+}
+
+.todo-list li button {
+  padding: 6px 12px;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.stats {
+  display: flex;
+  gap: 20px;
+  padding: 16px;
+  background: white;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #666;
+}
+
