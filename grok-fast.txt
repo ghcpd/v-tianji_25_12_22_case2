@@ -1,0 +1,125 @@
+User: Prompt
+You are considering contributing to an open source frontend project. Please review the project and identify any small, self-contained tasks that could be suitable for an external contributor. For each task you find:
+
+Explain why it might be a good candidate for contribution.
+
+Ask any clarifying questions you would need to start contributing safely.
+
+Suggest a high-level approach for tackling the task without breaking other functionality.
+
+Do not assume that all information is available; raise questions if anything is unclear. Focus on identifying tasks and asking meaningful questions, rather than implementing solutions.
+
+Title:
+Help Wanted Task Discovery & Contribution Planning
+
+Description:
+This task evaluates the model’s ability to act as an external contributor by discovering small, self-contained tasks in a codebase that could be suitable for Help Wanted contributions. The model should identify potential contribution opportunities, ask clarifying questions about missing context or dependencies, and propose safe, high-level approaches to tackle these tasks. The focus is on task discovery, proactive question asking, and planning contributions safely, without being told the tasks explicitly or directly implementing them.
+
+GitHub Copilot: Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/v-tianji_25_12_22_case2/README.md)
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/v-tianji_25_12_22_case2/package.json)
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/v-tianji_25_12_22_case2/src/App.tsx#1-1), lines 1 to 100
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/v-tianji_25_12_22_case2/src/App.tsx#101-101), lines 101 to 110
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/v-tianji_25_12_22_case2/src/App.css#1-1), lines 1 to 100
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/v-tianji_25_12_22_case2/src/App.css#101-101), lines 101 to 111
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/v-tianji_25_12_22_case2/src/main.tsx)
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/v-tianji_25_12_22_case2/src/index.css)
+
+Ran terminal command: npm run build
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/v-tianji_25_12_22_case2)
+
+Ran terminal command: npm install
+
+Ran terminal command: npm run build
+
+Searched for text `TODO|FIXME|BUG|HACK` (`**/*.tsx`), 20 results
+
+Ran terminal command: npm run dev
+
+Based on my review of this React TypeScript Todo app (built with Vite), I've identified several small, self-contained tasks that could be suitable for external contributors. These tasks are focused on incremental improvements that don't require deep knowledge of the entire codebase, can be implemented with minimal risk of breaking existing functionality, and align with common open-source contribution patterns (e.g., bug fixes, feature additions, and tooling enhancements). I'll focus on tasks that are isolated to specific files or components, with clear scope.
+
+For each task, I'll:
+- Explain why it's a good candidate for contribution (e.g., low risk, high impact, self-contained).
+- Ask clarifying questions needed to proceed safely (e.g., about project conventions or dependencies).
+- Suggest a high-level approach for tackling it without breaking other functionality.
+
+### Task 1: Add ESLint Configuration for Code Quality
+**Why it's a good candidate**: This project lacks any linting setup, which is a common gap in early-stage open-source projects. Adding ESLint would improve code consistency, catch potential bugs (e.g., unused variables), and make the codebase more maintainable. It's a self-contained task that only touches configuration files and doesn't alter runtime behavior. Contributors often start with tooling improvements like this, as they're low-risk and provide immediate value to future development.
+
+**Clarifying questions**:
+- Is there an existing coding style guide or preferred ESLint ruleset (e.g., Airbnb, Standard, or custom rules) that the project follows?
+- Should the linting include TypeScript-specific rules, and are there any files or patterns that should be excluded from linting?
+- What Node.js version is the project targeting, and are there any CI/CD constraints that might affect the ESLint setup?
+
+**High-level approach**:
+1. Install ESLint and related plugins (e.g., `@typescript-eslint/eslint-plugin`, `@typescript-eslint/parser`) as dev dependencies.
+2. Create an `.eslintrc.js` or `.eslintrc.json` file with basic rules for React/TypeScript (e.g., no unused vars, consistent spacing).
+3. Add an `lint` script to package.json and run it to identify/fix any initial issues in existing code.
+4. Update the README.md to document the linting setup and how to run it.
+5. Ensure the build process (e.g., `npm run build`) still passes after changes.
+
+### Task 2: Fix Memory Leak in Event Listeners
+**Why it's a good candidate**: In App.tsx, the `useEffect` hook adds event listeners for `resize` and `click` events but doesn't return a cleanup function, which can cause memory leaks over time. This is a classic React anti-pattern that's easy to spot and fix. It's self-contained (only affects one file), improves performance, and demonstrates attention to best practices—perfect for a beginner-friendly bug fix contribution.
+
+**Clarifying questions**:
+- Are the `handleResize` and `handleClick` functions intended for future features, or can they be removed if they're just logging placeholders?
+- Is there a specific reason these global listeners are needed (e.g., for analytics), or are they remnants of development?
+- What browser support is required (e.g., does it need to work in older browsers where event listener cleanup is more critical)?
+
+**High-level approach**:
+1. Modify the `useEffect` in App.tsx to return a cleanup function that removes the event listeners.
+2. If the handlers are not needed, remove them entirely to simplify the code.
+3. Test the app to ensure no functionality breaks (e.g., add/remove todos still work).
+4. If keeping the listeners, consider adding conditions to avoid unnecessary re-additions on re-renders.
+
+### Task 3: Add Accessibility Improvements (ARIA Labels and Keyboard Navigation)
+**Why it's a good candidate**: The app's UI elements (e.g., buttons, inputs, checkboxes) lack accessibility attributes like `aria-label`, `aria-describedby`, or proper keyboard support, which violates WCAG guidelines. This is a high-impact task for inclusivity, and it's self-contained to the JSX in App.tsx. External contributors often tackle accessibility as it's valuable, non-disruptive, and can be done incrementally without changing core logic.
+
+**Clarifying questions**:
+- Are there any existing accessibility requirements or tools (e.g., axe-core for testing) already in use?
+- Should the app support screen readers, and are there specific ARIA patterns preferred (e.g., for todo lists)?
+- Is there a design system or component library that dictates accessibility standards?
+
+**High-level approach**:
+1. Add `aria-label` attributes to interactive elements (e.g., the add button, filter buttons, delete buttons).
+2. Ensure keyboard navigation works (e.g., tab order, Enter/Space for actions) without changing existing event handlers.
+3. Add `role` attributes where needed (e.g., `role="list"` for the todo list).
+4. Test with browser dev tools or a screen reader simulator to verify improvements.
+5. Keep changes minimal to avoid altering the visual design.
+
+### Task 4: Add a "Clear All Completed" Feature
+**Why it's a good candidate**: Todo apps commonly have a way to bulk-remove completed items, which is missing here. This is a small feature addition that's self-contained (adds one button and handler in App.tsx), enhances UX, and can be implemented without touching storage or filtering logic. It's a good "feature request" style contribution that builds on existing patterns.
+
+**Clarifying questions**:
+- Should the "Clear All Completed" button appear only when there are completed todos, or always?
+- Is there a preferred placement (e.g., near the stats section), and should it have confirmation (e.g., a modal)?
+- Are there any UI/UX guidelines for button styling or icons?
+
+**High-level approach**:
+1. Add a new button in the JSX (e.g., in the `stats` div) with an `onClick` handler.
+2. Create a `clearCompleted` function that filters out completed todos from the state.
+3. Ensure the button is disabled or hidden when there are no completed todos.
+4. Test that it doesn't affect active todos or localStorage persistence.
+
+### Task 5: Add Basic Error Handling for localStorage
+**Why it's a good candidate**: The app assumes localStorage is always available, but it can fail (e.g., in private browsing or if disabled). Adding try-catch blocks is a defensive programming improvement that's self-contained to the `useEffect` hooks in App.tsx. It's a low-risk bug fix that prevents crashes and improves robustness.
+
+**Clarifying questions**:
+- What should happen if localStorage fails (e.g., show a warning, fall back to in-memory state)?
+- Are there any logging or error reporting mechanisms already in place?
+- Should the app gracefully degrade, or is localStorage a hard requirement?
+
+**High-level approach**:
+1. Wrap `localStorage.getItem` and `setItem` calls in try-catch blocks.
+2. On get failure, log an error and proceed with empty state.
+3. On set failure, log an error but don't break the app.
+4. Add a comment explaining the fallback behavior.
+
+These tasks are prioritized for being small (1-2 files each), testable, and reversible. If I were to contribute, I'd start with Task 1 or 2 to establish familiarity with the codebase. However, before proceeding with any implementation, I'd need answers to the clarifying questions to ensure alignment with project goals and avoid introducing inconsistencies. Are there any GitHub issues, contribution guidelines, or specific areas of the codebase you'd like me to focus on further?
