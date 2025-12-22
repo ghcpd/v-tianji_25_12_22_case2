@@ -1,0 +1,158 @@
+User: Prompt
+You are considering contributing to an open source frontend project. Please review the project and identify any small, self-contained tasks that could be suitable for an external contributor. For each task you find:
+
+Explain why it might be a good candidate for contribution.
+
+Ask any clarifying questions you would need to start contributing safely.
+
+Suggest a high-level approach for tackling the task without breaking other functionality.
+
+Do not assume that all information is available; raise questions if anything is unclear. Focus on identifying tasks and asking meaningful questions, rather than implementing solutions.
+
+Title:
+Help Wanted Task Discovery & Contribution Planning
+
+Description:
+This task evaluates the model’s ability to act as an external contributor by discovering small, self-contained tasks in a codebase that could be suitable for Help Wanted contributions. The model should identify potential contribution opportunities, ask clarifying questions about missing context or dependencies, and propose safe, high-level approaches to tackle these tasks. The focus is on task discovery, proactive question asking, and planning contributions safely, without being told the tasks explicitly or directly implementing them.
+
+GitHub Copilot: I'll review this frontend project to identify potential contribution tasks. Let me start by examining the project structure and key files. 
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/v-tianji_25_12_22_case2/package.json)
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/v-tianji_25_12_22_case2/README.md)
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/v-tianji_25_12_22_case2/src/App.tsx#1-1), lines 1 to 100
+
+Let me check the CSS and main entry files as well: 
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/v-tianji_25_12_22_case2/src/App.css#1-1), lines 1 to 50
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/v-tianji_25_12_22_case2/src/main.tsx)
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/v-tianji_25_12_22_case2/index.html)
+
+Now let me see the rest of the App.tsx file and get the complete CSS: 
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/v-tianji_25_12_22_case2/src/App.tsx#100-100), lines 100 to 110
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/v-tianji_25_12_22_case2/src/App.css#40-40), lines 40 to 111
+
+Perfect! I've reviewed the project. This is a Todo application built with React and TypeScript. Let me identify potential contribution tasks:
+
+---
+
+## Project Review & Contribution Opportunities
+
+I've identified **5 small, self-contained tasks** suitable for external contributors:
+
+---
+
+### **Task 1: Clean Up Unused Event Listeners**
+
+**Why it's good for contribution:**
+- The code has event listeners registered in `useEffect` but the handler functions (`handleResize`, `handleClick`) only log to console without side effects
+- This is a straightforward cleanup task that improves code quality
+- Low risk of breaking functionality since these handlers don't affect state
+
+**Clarifying questions:**
+1. Should these event listeners be removed entirely, or is there intended functionality that was left incomplete?
+2. Are there any performance concerns about resize/click events that these were meant to address?
+3. Should we add a cleanup function to remove these listeners in the `useEffect` return statement (to prevent memory leaks when the component unmounts)?
+
+**High-level approach:**
+- Remove or refactor the event listener registration and handler functions
+- If keeping them, implement proper cleanup with `removeEventListener` in a `useEffect` return statement
+- Add comments explaining why these listeners are necessary (if they should remain)
+- Test that the app still functions after removal
+
+---
+
+### **Task 2: Add "Clear Completed" Feature**
+
+**Why it's good for contribution:**
+- Highly requested feature in todo apps (common UX pattern)
+- Self-contained with no dependencies on other features
+- Clear scope: add a button and filtering logic
+
+**Clarifying questions:**
+1. Should there be a confirmation dialog before clearing completed todos, or clear immediately?
+2. Should this button appear in the filter section or as a separate button?
+3. Should users get any feedback (toast/message) confirming todos were cleared?
+
+**High-level approach:**
+- Add a new button in the UI (likely in the filter-section or stats area)
+- Create a `clearCompleted()` function that filters out completed todos
+- Update the styling to match existing button styles
+- Test that only completed todos are removed and active todos remain
+
+---
+
+### **Task 3: Prevent Duplicate Todo Text**
+
+**Why it's good for contribution:**
+- Validates user input to improve data quality
+- Small, focused change with minimal impact
+- Common enhancement for todo apps
+
+**Clarifying questions:**
+1. Should the duplicate check be case-sensitive or case-insensitive?
+2. Should we prevent adding todos with identical text, or just warn the user?
+3. How should the app respond if a user tries to add a duplicate (disable button, show message)?
+
+**High-level approach:**
+- Add a validation check in the `addTodo()` function before creating a new todo
+- Compare new input against existing todo texts
+- Disable the "Add" button or show an error message if duplicate is detected
+- Keep the UX consistent with existing error handling patterns
+
+---
+
+### **Task 4: Add Keyboard Shortcut for Delete**
+
+**Why it's good for contribution:**
+- Accessibility and UX improvement
+- Isolated to individual todo items
+- Low complexity, high user value
+
+**Clarifying questions:**
+1. What keyboard shortcut should be used? (e.g., long-press, specific key, key combination)
+2. Should the shortcut work across all filter views (all/active/completed)?
+3. Should there be a visual indicator (tooltip/hint) showing users the delete shortcut?
+
+**High-level approach:**
+- Add a keyboard event listener to each todo list item
+- Implement the delete action when the shortcut is triggered
+- Consider adding an `onKeyDown` handler to the `<li>` element or a wrapper
+- Test across different filter states to ensure consistent behavior
+
+---
+
+### **Task 5: Improve Filter Button UX with Active State Indicator**
+
+**Why it's good for contribution:**
+- Pure UI/UX improvement with no state logic changes
+- Enhances visual feedback and usability
+- Completely self-contained styling update
+
+**Clarifying questions:**
+1. What visual indicator should show the active filter? (background color, border, different style)
+2. Should there be a default active state on page load (currently "all" is default)?
+3. Should we add smooth transitions between states for better UX?
+
+**High-level approach:**
+- Add conditional CSS class to filter buttons based on current `filter` state
+- Create CSS styles for the active button state (different background color, border style, etc.)
+- Update the filter button JSX to apply the active class conditionally
+- Test that the active state updates correctly when switching filters
+
+---
+
+## Questions About the Project Itself:
+
+1. **Testing**: Are there any existing tests? What testing framework/approach is expected for contributions?
+2. **Code Style**: Are there linting rules (ESLint) or code formatting requirements (Prettier) contributors should follow?
+3. **Browser Support**: What browsers should contributions be compatible with?
+4. **Accessibility**: Are there accessibility (a11y) standards or WCAG levels the project targets?
+5. **State Management**: Are there plans to migrate from `useState` to a state management library, or is this staying simple intentionally?
+
+These tasks provide a good entry point for new contributors while maintaining code quality and user experience!
