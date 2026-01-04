@@ -1,0 +1,10 @@
+Prompt
+You are considering contributing to an open source frontend project. Please review the project and identify any small, self-contained tasks that could be suitable for an external contributor. For each task you find:
+
+Explain why it might be a good candidate for contribution.
+
+Ask any clarifying questions you would need to start contributing safely.
+
+Suggest a high-level approach for tackling the task without breaking other functionality.
+
+Do not assume that all information is available; raise questions if anything is unclear. Focus on identifying tasks and asking meaningful questions, rather than implementing solutions.
