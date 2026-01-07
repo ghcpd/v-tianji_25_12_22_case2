@@ -1,0 +1,194 @@
+User: Prompt
+You are considering contributing to an open source frontend project. Please review the project and identify any small, self-contained tasks that could be suitable for an external contributor. For each task you find:
+
+Explain why it might be a good candidate for contribution.
+
+Ask any clarifying questions you would need to start contributing safely.
+
+Suggest a high-level approach for tackling the task without breaking other functionality.
+
+Do not assume that all information is available; raise questions if anything is unclear. Focus on identifying tasks and asking meaningful questions, rather than implementing solutions.
+
+
+Title:
+Help Wanted Task Discovery & Contribution Planning
+
+
+Description:
+This task evaluates the model’s ability to act as an external contributor by discovering small, self-contained tasks in a codebase that could be suitable for Help Wanted contributions. The model should identify potential contribution opportunities, ask clarifying questions about missing context or dependencies, and propose safe, high-level approaches to tackle these tasks. The focus is on task discovery, proactive question asking, and planning contributions safely, without being told the tasks explicitly or directly implementing them.
+
+
+
+GitHub Copilot: Quick status — I'll read the repository root files and the main app files to find small, self-contained contribution opportunities. I'll open 5 files now (package.json, README.md, App.tsx, main.tsx, index.css).
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/v-tianji_25_12_22_case2/package.json)
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/v-tianji_25_12_22_case2/README.md)
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/v-tianji_25_12_22_case2/src/App.tsx)
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/v-tianji_25_12_22_case2/src/main.tsx)
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/v-tianji_25_12_22_case2/src/index.css)
+
+## ✅ Quick summary
+I reviewed the app in src (notably App.tsx, index.css) and the repo metadata. I found several **small, self-contained** tasks ideal for external contributors — each is low-risk and can be delivered as a single PR.
+
+---
+
+## Suggested Help‑Wanted tasks (ranked easy → moderate) 🎯
+
+### 1) Add proper cleanup for global event listeners (bugfix)
+- Files: App.tsx  
+- Why it's a good candidate: small, focused, improves stability (prevents memory leaks) and has clear unit-test coverage possibilities.  
+- Clarifying questions:
+  - Should the resize / click handlers remain global, or should we scope/remove them entirely?
+- High-level approach:
+  1. Update the `useEffect` that adds listeners to return a cleanup function that removes them.
+  2. Move handler definitions into the effect or memoize them so removeEventListener uses the same reference.
+  3. Add a small unit/integration test verifying listeners are removed (or at minimum verify no console logs after unmount).
+- Risk mitigation: test unmount behavior; changes are localized.
+
+---
+
+### 2) Replace deprecated `onKeyPress` with `onKeyDown` and/or use `<form onSubmit>` (accessibility + correctness)
+- Files: App.tsx
+- Why it's a good candidate: tiny change, improves semantics and cross-browser behavior.
+- Clarifying questions:
+  - Prefer a `form` + `onSubmit` implementation or simply switching to `onKeyDown`?
+- High-level approach:
+  1. Wrap input/button in a `<form>` and handle submit to call `addTodo`.
+  2. Remove `onKeyPress` or replace with `onKeyDown`.
+  3. Ensure `button` has `type="submit"` or `type="button"` appropriately.
+- Tests / acceptance: pressing Enter adds a todo; no regressions.
+
+---
+
+### 3) Add defensive JSON parsing for localStorage (robustness)
+- Files: App.tsx
+- Why it's a good candidate: single-line change (try/catch) that prevents app crash if localStorage contains invalid JSON.
+- Clarifying questions:
+  - Should we silently ignore bad data or show a warning / reset storage?
+- High-level approach:
+  1. Wrap `JSON.parse(saved)` in try/catch and fallback to `[]`.
+  2. Optionally clear corrupted key or log a warning.
+- Acceptance: app doesn’t crash when `localStorage.todos` is invalid.
+
+---
+
+### 4) Remove debug console.logs or gate them behind DEV flag (cleanup)
+- Files: App.tsx
+- Why: trivial, improves production readiness.
+- Clarifying questions:
+  - Keep logs during development only, or remove outright?
+- High-level approach:
+  1. Remove `console.log` calls or wrap with `if (import.meta.env.DEV)`.
+  2. Add unit test or manual verification step.
+- Risk: none.
+
+---
+
+### 5) Add accessibility improvements (ARIA + semantics)
+- Files: App.tsx, index.css / App.css
+- Why: high-impact for users and a well-scoped contribution.
+- Clarifying questions:
+  - Any accessibility guidelines to follow (WCAG level, aria patterns)?
+- High-level approach:
+  1. Add `aria-label` to the input, `aria-pressed`/`aria-current` for filter buttons, and `aria-live` for stats/errors if needed.
+  2. Ensure buttons have explicit `type`.
+  3. Add visible focus styles in CSS.
+- Acceptance: passes basic axe/core accessibility checks; keyboard-only usage works.
+
+---
+
+### 6) Add “empty state” UI when there are no todos (UX)
+- Files: App.tsx, App.css
+- Why: small UI improvement that’s visually obvious and testable.
+- Clarifying questions:
+  - Any preferred copy or design for the empty state?
+- High-level approach:
+  1. Conditionally render a friendly illustration / message when `todos.length === 0`.
+  2. Add simple CSS for layout.
+- Acceptance: shows message when list empty.
+
+---
+
+### 7) Visual indicator for active filter and small styling polish
+- Files: App.tsx, App.css
+- Why: isolated styling change, immediate UX improvement.
+- Clarifying questions:
+  - Should the filter be a toggle group (aria-pressed) or a segmented control design?
+- High-level approach:
+  1. Add CSS class for active filter.
+  2. Apply class based on `filter` state and add `aria-pressed`.
+- Acceptance: active filter visibly distinct and keyboard accessible.
+
+---
+
+### 8) Add a small unit test suite for core behaviors (adds/toggles/deletes/persistence)
+- Files to add: `src/App.test.tsx` (or similar) + package.json script
+- Why: enables safer future contributions, finite scope (cover 5–6 behaviors).
+- Clarifying questions:
+  - Is it OK to add a test runner (Vitest + @testing-library/react) as devDependency?
+  - Do you want tests included in CI?
+- High-level approach:
+  1. Add `vitest`, `@testing-library/react`, `@testing-library/jest-dom` as devDeps (if approved).
+  2. Create tests for add, toggle, delete, filter, and localStorage persistence.
+  3. Add `npm test` script.
+- Risk: adding deps — ask for approval first.
+
+---
+
+### 9) Add CONTRIBUTING.md with "good first issue" checklist and PR template (docs)
+- Files to add: `CONTRIBUTING.md`, optionally `.github/ISSUE_TEMPLATE` or `.github/PULL_REQUEST_TEMPLATE.md`
+- Why: non-code but high ROI for external contributors.
+- Clarifying questions:
+  - Any preferred PR checklist or branch naming convention?
+- High-level approach:
+  1. Add short contributing instructions, coding conventions, and how to run locally.
+  2. Provide a checklist for PRs (tests, lint, description).
+- Acceptance: improves contributor onboarding.
+
+---
+
+### 10) Small TypeScript typing refinements (events / handler signatures)
+- Files: App.tsx
+- Why: trivial refactor and helps maintainability.
+- Clarifying questions:
+  - Any linting/type rules to follow (e.g., exhaustive checks)?
+- High-level approach:
+  1. Add explicit event types (e.g., `React.ChangeEvent<HTMLInputElement>`).
+  2. Export small handler types if reused.
+- Acceptance: no runtime changes; TypeScript compile remains clean.
+
+---
+
+## Questions I need answered before contributing 🔎
+1. Do you want me to open separate PRs per task or group related fixes (e.g., cleaning + accessibility) into one PR?  
+2. Is it acceptable to add devDependencies (Vitest / testing library) for task #8?  
+3. Any coding style/lint rules or branch/PR naming conventions I should follow? (e.g., `feat/`, `fix/`, `chore/`)  
+4. Should I include unit tests for every code change, or are some changes allowed without tests?  
+5. Any UI design constraints for visual tasks (colors, spacing, brand rules)?
+
+---
+
+## Suggested next steps (pick 1–2 to start) ✅
+1. Fix the event-listener cleanup + remove debug logs (small PR, high value).  
+2. Add `form`+`onSubmit` + replace `onKeyPress` (accessibility + correctness).  
+3. Add `CONTRIBUTING.md` + label a few issues as “good first issue” (improves onboarding).
+
+---
+
+## Acceptance criteria template for a PR (copy into the issue/PR)
+- What I changed and why (1–2 lines)  
+- How to verify (manual steps + example inputs)  
+- Tests added/updated (list)  
+- Backward-compatibility notes (none/what to watch for)
+
+---
+
+If you want, I can:
+- Draft one small PR (pick which task), including tests and a short PR description.  
+- Or open issues for the tasks above with checklists so maintainers can assign them.
+
+Which task should I start with?
