@@ -1,0 +1,229 @@
+User: Prompt
+You are considering contributing to an open source frontend project. Please review the project and identify any small, self-contained tasks that could be suitable for an external contributor. For each task you find:
+
+Explain why it might be a good candidate for contribution.
+
+Ask any clarifying questions you would need to start contributing safely.
+
+Suggest a high-level approach for tackling the task without breaking other functionality.
+
+Do not assume that all information is available; raise questions if anything is unclear. Focus on identifying tasks and asking meaningful questions, rather than implementing solutions.
+
+
+Title:
+Help Wanted Task Discovery & Contribution Planning
+
+
+Description:
+This task evaluates the model’s ability to act as an external contributor by discovering small, self-contained tasks in a codebase that could be suitable for Help Wanted contributions. The model should identify potential contribution opportunities, ask clarifying questions about missing context or dependencies, and propose safe, high-level approaches to tackle these tasks. The focus is on task discovery, proactive question asking, and planning contributions safely, without being told the tasks explicitly or directly implementing them.
+
+
+
+GitHub Copilot: Next action: I'll scan the repository root files and the main React entry/components to surface small, self-contained frontend tasks (UI, styling, accessibility, tests, docs). I'll start by reading package.json, README.md, App.tsx, main.tsx, and index.html.
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/v-tianji_25_12_22_case2/package.json)
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/v-tianji_25_12_22_case2/README.md)
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/v-tianji_25_12_22_case2/src/App.tsx)
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/v-tianji_25_12_22_case2/index.html)
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/v-tianji_25_12_22_case2/src/main.tsx)
+
+Next action: I'll read the stylesheet files to surface styling, responsiveness, and accessibility tasks.
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/v-tianji_25_12_22_case2/src/index.css)
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/v-tianji_25_12_22_case2/src/App.css)
+
+GitHub Copilot — I reviewed the repo and found several small, self-contained frontend tasks that are ideal for external contributors. Below are recommended "Help Wanted" items, why each is a good candidate, the clarifying questions you’d need before starting, and a safe high-level plan + verification steps.
+
+---
+
+## Quick summary ✅
+- Repository: small React + Vite todo app (files of interest: App.tsx, `src/*.css`, index.html, package.json).  
+- Top, high-impact opportunities: fix event-listener memory leak, improve accessibility, add defensive localStorage parsing, add an empty-state UI, and add a minimal test suite.  
+- Next step I recommend: pick one of the bug/a11y tasks (low risk) and open a small PR with tests and a short changelog note.
+
+---
+
+## High-priority (small, low-risk) tasks — great for first-time contributors
+
+### 1) Fix event-listener lifecycle (memory-leak / incorrect effect) — bug
+- Where: App.tsx (the `useEffect` that calls `window.addEventListener('resize', ...)` and `document.addEventListener('click', ...)`).
+- Why good: single-file change, high impact (prevents leaks/unexpected behavior), easy to test and review.
+- Clarifying questions
+  - Should handlers remain simple console-logging, or should they be removed/changed to no-op in production?
+  - Any preferred pattern (define handlers inside effect vs. `useCallback`) for consistency with codebase?
+- Safe high-level approach
+  - Add a cleanup function that removes the listeners.
+  - Either define handlers inside the effect or wrap them in `useCallback` and include them in the dependency array to satisfy hooks rules.
+  - Remove stray `console.log` calls or gate them behind a debug flag.
+- Verification
+  - Unit test (or manual): mount/unmount component and assert `removeEventListener` was called (or observe no additional handlers on repeated mounts).
+  - Manual: open DevTools → add/remove component (or reload) and confirm no duplicate logs on resize/click.
+- Estimate: 1–2 hours, ~10–25 LOC change
+- Suggested labels: bug, good first issue
+
+---
+
+### 2) Replace deprecated `onKeyPress` with accessible keyboard handling
+- Where: App.tsx — input uses `onKeyPress` to detect Enter.
+- Why good: small change, accessibility + correctness improvement.
+- Clarifying questions
+  - Should Enter be the only key handling required? Any additional keyboard shortcuts expected?
+- Safe high-level approach
+  - Replace `onKeyPress` with `onKeyDown` (check `e.key === 'Enter'`) and add an accessible `<label>` for the input (or `aria-label`).
+  - Add a unit test that simulates Enter key to add a todo.
+- Verification
+  - Keyboard test: pressing Enter adds a todo.
+  - Accessibility: input is focusable and has an accessible name.
+- Estimate: 30–60 minutes, ~5–15 LOC
+- Suggested labels: enhancement, accessibility, good first issue
+
+---
+
+### 3) Add defensive localStorage parsing + schema validation
+- Where: App.tsx — `JSON.parse(localStorage.getItem('todos'))` (no try/catch or validation).
+- Why good: prevents runtime crashes from corrupted data; small, high-value change.
+- Clarifying questions
+  - Do we need to support older schema versions or migrations?
+  - Is silent failure acceptable (ignore invalid data) or should the app surface a warning?
+- Safe high-level approach
+  - Wrap parse in `try/catch`; validate parsed object is an array of todos with required fields before calling `setTodos`.
+  - Optionally add a migration step or a safe fallback to `[]`.
+  - Add unit tests for corrupted / unexpected localStorage values.
+- Verification
+  - Simulate `localStorage` containing invalid JSON and ensure app loads without throwing.
+- Estimate: 1–2 hours, ~10–30 LOC
+- Suggested labels: bug, robustness
+
+---
+
+## UX / Accessibility tasks — quick wins
+
+### 4) Add visible label + ARIA to interactive controls (input, filter buttons, delete button)
+- Where: App.tsx, App.css
+- Why good: broad accessibility impact, trivial code changes.
+- Clarifying questions
+  - Prefer visible label text or visually-hidden label pattern?
+  - Any copy preferences for button `aria-label`s (e.g., “Delete todo: <text>”)?
+- Safe high-level approach
+  - Add `<label htmlFor="todo-input">` OR `aria-label="Add todo"`.
+  - Add `aria-pressed` / `aria-current` to filter buttons when active.
+  - Ensure focus styles are visible (add `:focus-visible` CSS).
+  - Add one axe/aria unit test (or a simple DOM assertion).
+- Verification
+  - Axe/Accessibility lint run; keyboard navigation works; screen reader name present.
+- Estimate: 1–3 hours, ~10–40 LOC
+- Suggested labels: accessibility, good first issue
+
+---
+
+### 5) Add an empty-state / “no todos” UI + microcopy
+- Where: App.tsx, App.css
+- Why good: small UI improvement, good for design-first contributors.
+- Clarifying questions
+  - Preferred copy/design for empty state? (e.g., “No todos — add one”)
+  - Any illustrations/icons to include or keep minimal?
+- Safe high-level approach
+  - Conditionally render a friendly message with a primary CTA to focus the input.
+  - Add CSS and tests (snapshot / DOM assertions).
+- Verification
+  - With empty `todos`, the empty-state appears and Add button focuses input.
+- Estimate: 1–2 hours, ~10–30 LOC
+- Suggested labels: enhancement, good first issue
+
+---
+
+## Quality / tests / CI (good mid-sized starter PRs)
+
+### 6) Add a minimal unit test suite for `App` (Vitest + React Testing Library)
+- Where: add tests under `src/__tests__/App.test.tsx` and devDeps in package.json
+- Why good: establishes testing baseline; single focused PR can add 3–4 tests (add, toggle, delete, filter).
+- Clarifying questions
+  - Which test runner do maintainers prefer? (Vitest is common for Vite; Jest is also possible.)
+  - Is adding a new devDependency acceptable?
+- Safe high-level approach
+  - Add `vitest` + `@testing-library/react` devDependencies, add `test` script, and implement 3–4 core tests.
+  - Keep test surface small and non-flaky.
+- Verification
+  - `npm run test` passes locally and in CI.
+- Estimate: 2–4 hours (includes setup), ~50–150 LOC (tests + config)
+- Suggested labels: tests, help wanted
+
+### 7) Add a small CI workflow that runs build + tests
+- Where: add `.github/workflows/ci.yml`
+- Why good: quick automation, improves contribution safety.
+- Clarifying questions
+  - Any preferred Node version matrix or OS matrix?
+  - Should the workflow also run an accessibility check?
+- Safe high-level approach
+  - Add GitHub Actions job: checkout, node 18, install, run `npm run build` and `npm run test`.
+- Verification
+  - Create PR and ensure the workflow passes.
+- Estimate: 1–2 hours
+- Suggested labels: ci, help wanted
+
+---
+
+## Code-style / polish (very small)
+
+### 8) Remove stray `console.log` calls or gate behind debug flag
+- Where: App.tsx (handlers)
+- Why good: small cleanup, improves production logs.
+- Clarifying questions
+  - Should we keep logs during development only or remove entirely?
+- Approach: remove or wrap with `if (process.env.NODE_ENV !== 'production') console.log(...)`.
+- Estimate: 15–30 minutes
+
+---
+
+## Suggested PR checklist (copy into ISSUE/PR template) 🧩
+1. Summary of change and motivation.  
+2. Files changed (one-liner).  
+3. How to test locally (commands + manual steps).  
+4. Unit tests added/updated (if applicable).  
+5. Accessibility considerations (keyboard, aria, labels).  
+6. Screenshots or before/after (if UI).  
+7. Linked issue / suggested labels: `good first issue`, `help wanted`, `a11y`, `bug`, `tests`.
+
+---
+
+## Minimal verification commands (for contributors)
+- Start dev server: `npm install && npm run dev` → verify at `http://localhost:5173`
+- Run build: `npm run build`
+- Run tests (if added): `npm run test` (or `npx vitest`)
+
+---
+
+## Project-level clarifying questions (please answer before work begins)
+- Are there existing contribution guidelines, PR templates, or branch naming rules you want contributors to follow?
+- Preferred test runner: Vitest or Jest? Any opinion on snapshot tests?
+- Do you want contributors to add new devDependencies for tests/linters, or prefer changes that avoid new packages?
+- Any UI/copy/design constraints (brand colors, copy tone) for empty states / accessibility text?
+- Is there an expected turnaround or CI coverage requirement for merging small PRs?
+
+---
+
+## Suggested "good first issue" labels & one-line issue titles
+- bug: Fix missing event-listener cleanup in `App`  
+- accessibility: Add accessible label for todo input and aria attributes for controls  
+- enhancement: Render empty-state when there are no todos  
+- tests: Add unit tests for add/toggle/delete filter behavior
+
+---
+
+## Prioritized recommendation (what I would do first)
+1. Fix event-listener cleanup + remove console logs (safety/bugfix).  
+2. Add accessible labels and keyboard handling (a11y).  
+3. Add a couple of unit tests around those behaviors and a CI check.
+
+---
+
+If you want, I can:
+- Draft one or more "good first issue" descriptions (with checklists and suggested code snippets), or
+- Open a small PR that implements one chosen task (I will include tests and a PR checklist).
+
+Which task should I prepare an issue/PR for first? (Prefer: a) fix event-listener cleanup, b) add a11y labels, c) add empty-state, d) add tests)
