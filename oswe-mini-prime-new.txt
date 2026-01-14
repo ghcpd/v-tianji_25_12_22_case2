@@ -1,0 +1,171 @@
+User: Prompt
+You are considering contributing to an open source frontend project. Please review the project and identify any small, self-contained tasks that could be suitable for an external contributor. For each task you find:
+
+Explain why it might be a good candidate for contribution.
+
+Ask any clarifying questions you would need to start contributing safely.
+
+Suggest a high-level approach for tackling the task without breaking other functionality.
+
+Do not assume that all information is available; raise questions if anything is unclear. Focus on identifying tasks and asking meaningful questions, rather than implementing solutions.
+
+Title:
+Help Wanted Task Discovery & Contribution Planning
+
+Description:
+This task evaluates the model’s ability to act as an external contributor by discovering small, self-contained tasks in a codebase that could be suitable for Help Wanted contributions. The model should identify potential contribution opportunities, ask clarifying questions about missing context or dependencies, and propose safe, high-level approaches to tackle these tasks. The focus is on task discovery, proactive question asking, and planning contributions safely, without being told the tasks explicitly or directly implementing them.
+
+GitHub Copilot: Proceeding to inspect the repository's README, package.json, and key source files to identify small, self-contained frontend tasks and questions. I'll read the main project files now.
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/v-tianji_25_12_22_case2/README.md)
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/v-tianji_25_12_22_case2/package.json)
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/v-tianji_25_12_22_case2/src/App.tsx)
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/v-tianji_25_12_22_case2/src/main.tsx)
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/v-tianji_25_12_22_case2/src/index.css)
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/v-tianji_25_12_22_case2/src/App.css)
+
+Perfect! I scanned the repo and found several small, self-contained frontend tasks suitable for external contributors. My next step is to list each task with why it’s a good candidate, clarifying questions, and a safe high-level approach.## Help Wanted Task Discovery & Contribution Planning ✅
+
+I reviewed the repo (simple React + TypeScript Todo app) and identified several *small, self-contained* contribution opportunities that are good for newcomers. Each item below includes: **why** it’s a good candidate, **questions** to ask before starting, and a **safe high-level approach**.
+
+---
+
+### 1) Fix missing cleanup of global event listeners (bugfix) 🔧
+- **Why**: In App.tsx an effect adds `resize` and `click` listeners but never removes them — this can cause memory leaks or duplicate handlers during re-renders. Small, well-scoped change with clear testable behavior.
+- **Clarifying questions**
+  - Should we keep these listeners on the whole app or scope them to a specific element/component?
+  - Do you want us to extract handlers into `useCallback` for stability?
+  - Any specific browser support constraints?
+- **High‑level approach**
+  - Add a cleanup function to the `useEffect` that removes the handlers when the component unmounts.
+  - Optionally move handlers to `useCallback` so identity is stable.
+  - Test manually by opening/closing the component (or via unit tests that mount/unmount) and confirm only one listener exists.
+
+---
+
+### 2) Add resilient `localStorage` handling (defensive improvement) 🛡
+- **Why**: `JSON.parse` of `localStorage.getItem('todos')` can throw if the stored data is corrupted or not valid JSON. A small change with low risk and immediate reliability benefit.
+- **Clarifying questions**
+  - Do we want to clear invalid data, or fall back to an empty array and notify the user?
+  - Is there a preference to migrate/backup bad data?
+- **High‑level approach**
+  - Wrap `JSON.parse` in try/catch. On error, set todos to `[]` and optionally remove the invalid `todos` key or save a backup under a different key.
+  - Add a unit test asserting corrupted JSON results in empty state and doesn't crash.
+
+---
+
+### 3) Replace deprecated `onKeyPress` with `onKeyDown` and improve keyboard handling (accessibility/compatibility) ⌨️
+- **Why**: `onKeyPress` is deprecated in modern React and may behave inconsistently. Small behavioral change that improves accessibility.
+- **Clarifying questions**
+  - Should Enter also trigger when composing IME input (i.e., how to handle IME)? 
+  - Any existing keyboard shortcuts to preserve?
+- **High‑level approach**
+  - Switch the input from `onKeyPress` to `onKeyDown`, handle `e.key === 'Enter'`.
+  - Add tests (unit or integration) to confirm pressing Enter adds a todo.
+  - Manual test for IME if needed.
+
+---
+
+### 4) Improve accessibility (labels, ARIA attributes, and focus state) ♿
+- **Why**: Many controls (input, checkboxes, filter buttons, delete button) lack explicit accessible labels/attributes. These are easy-to-scope enhancements that improve inclusivity.
+- **Clarifying questions**
+  - Preference for aria labels vs visible labels? (e.g., a live region vs labels)
+  - Should we prioritize WCAG level or minimal ARIA changes?
+- **High‑level approach**
+  - Add `aria-label` to the text input (e.g., `aria-label="Add todo"`).
+  - Add `aria-pressed` or `aria-current` to filter buttons; mark active one with `aria-pressed="true"`.
+  - Add `aria-label` to the Delete button (e.g., `aria-label="Delete todo: {text}"`).
+  - Ensure focus outlines/states are visible in CSS.
+  - Add a small accessibility-focused test (e.g., using @testing-library/jest-dom to assert `aria-*` attributes).
+
+---
+
+### 5) Add visual active state for filter buttons (UX polish) 🎨
+- **Why**: Filter UI currently doesn’t show which filter is active visually beyond the resulting list; adding a visible active state is a scoped, low-risk UI improvement.
+- **Clarifying questions**
+  - Any desired visual style for active state (color/outline)? Should it match existing design tokens?
+  - Do we want CSS-only or a small class toggle in code?
+- **High‑level approach**
+  - Update App.tsx to add an `active` class when a filter is selected and update App.css with `.filter-section button.active` styles.
+  - Add a snapshot or DOM test verifying the active class is present when the state is set.
+
+---
+
+### 6) Add “Clear completed” button (small feature) ➖
+- **Why**: Common todo feature, self-contained to a single component. Good entry-level feature that exercises state updates and UI/testing.
+- **Clarifying questions**
+  - Should the action prompt confirmation if many items will be removed?
+  - Any undo functionality required?
+- **High‑level approach**
+  - Add a `Clear completed` button near the stats that calls `setTodos(todos.filter(t => !t.completed))`.
+  - Add tests covering behavior and confirm it disables or hides when there are no completed todos.
+
+---
+
+### 7) Add an "empty" state UI when there are no todos (UX) 📭
+- **Why**: Small visual improvement and simple code path to implement and test. Makes the app feel more polished.
+- **Clarifying questions**
+  - Any copy/illustration assets you prefer? Or should it be simple text + CTA?
+- **High‑level approach**
+  - Replace empty `<ul>` with a friendly message and CTA (e.g., “No todos yet — add your first one!”).
+  - Add unit test asserting the message appears when `todos.length === 0`.
+
+---
+
+### 8) Add minimal unit tests for core behaviors (add/toggle/delete/filter) ✅
+- **Why**: Tests help contributors work safely and are ideal intro contributions (small PRs adding tests).
+- **Clarifying questions**
+  - Which test framework is preferred? (Vitest + Testing Library is typical for Vite + React.)
+  - Any CI constraints or test runners already in use?
+- **High‑level approach**
+  - Add `vitest` and `@testing-library/react` as devDependencies (if allowed).
+  - Add tests for adding a todo, toggling completed, deleting, and filtering.
+  - Add a script `test` in package.json and run locally; avoid changing CI if none exists.
+
+---
+
+### 9) Add CONTRIBUTING.md and a “Good first issue” sample (community docs) 🧭
+- **Why**: Non-code contribution that is very helpful for new contributors. Low risk and easy to review.
+- **Clarifying questions**
+  - Any repo rules or a preferred PR template to include?
+  - Should we include a short developer setup/checklist?
+- **High‑level approach**
+  - Add a lightweight `CONTRIBUTING.md` with setup steps, testing, and PR expectations.
+  - Suggest a sample `good-first-issue` description that maintainers can label.
+
+---
+
+### 10) Add linting / formatting config (optional small infra) 🔍
+- **Why**: Consistency and easy to enforce for new PRs. Might be slightly larger because of formatting changes.
+- **Clarifying questions**
+  - Is adding ESLint/Prettier acceptable? Any existing style guides to follow?
+  - Do you want strict TypeScript config (like `strict: true`) immediately applied?
+- **High‑level approach**
+  - Add `.eslintrc` and `.prettierrc` with minimal rules, add `lint` script. Keep changes minimal or apply only on newly edited files.
+
+---
+
+## Prioritization & Estimated scope
+- Highest-value, lowest-risk first: (1) cleanup listeners, (2) `localStorage` error handling, (3) ARIA labels and keyboard handling, (4) "Clear completed" + empty state, (5) unit tests for core behaviors.
+- Docs and linting are great follow-ups that require a maintainers decision about standards.
+
+---
+
+## General Questions before I start any PRs
+- Are you okay with adding small dev dependencies (e.g., Vitest, Testing Library, ESLint), or should contributions avoid adding packages?
+- Any conventions you want followed (commit message style, branch naming, PR checklist)?
+- Do you prefer single-purpose PRs (one small change per PR) and an issue opened first for each task?
+- Is there any CI or code review checklist I should be aware of?
+
+---
+
+If you’d like, I can:
+- Open issues for the most straightforward tasks (I’ll include reproduction steps and proposed changes), or
+- Prepare a small PR for the easiest fix (event listener cleanup + test) once you confirm preferences about tests/dev-deps.
+
+Would you like me to prioritize one of the tasks above and open an issue or a PR for it?
